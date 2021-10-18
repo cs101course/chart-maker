@@ -1,0 +1,62 @@
+body {
+  background-color: white;
+}
+
+.app {
+}
+
+.diagram {
+}
+
+.diagramError {
+}
+
+.editor {
+  width: 100%;
+  border: 1px solid #eee;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid rgb(92, 98, 130);
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  color: #444;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  background-color: rgb(220, 220, 238);
+}
+
+.button:hover {
+  color: #fff;
+  background-color: rgb(114, 123, 163);
+}
+
+.toolbar {
+  text-align: right;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #aaa;
+}
+
+
+.code-if {
+  color: #700070;
+}
+
+.code-else {
+  color: #700000;
+}
+
+.code-block {
+  color: #000070;
+}
+
+.code-condition {
+  color: #005000;
+}
