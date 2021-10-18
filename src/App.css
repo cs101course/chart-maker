@@ -47,10 +47,17 @@ body {
 
 .code-if {
   color: #700070;
+  font-weight: bold;
+}
+
+.code-while {
+  color: #430070;
+  font-weight: bold;
 }
 
 .code-else {
   color: #700000;
+  font-weight: bold;
 }
 
 .code-block {

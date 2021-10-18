@@ -1,4 +1,4 @@
-type tokenType = "keyword" | "text" | "grouping";
+type tokenType = "keyword" | "text" | "grouping" | "start" | "end";
 interface Token {
   type: tokenType;
   value: string;
@@ -13,7 +13,7 @@ const tokeniser = (text: string) => {
   let token = "";
   let lineNum = 0;
   const brackets = ["(", ")", "{", "}"];
-  const keywords = ["if", "else"];
+  const keywords = ["if", "else", "while"];
   const tokenList: Array<Token> = [];
 
   const addToken = (type: tokenType) => {
@@ -67,16 +67,20 @@ const tokeniser = (text: string) => {
 }
 
 interface Node {
-  type: "statement" | "condition";
+  type: "statement" | "condition" | "loop";
   id?: string;
+  loop?: Array<Node>;
   then?: Array<Node>;
   else?: Array<Node>;
   text?: string;
+  isEnd?: boolean;
 }
 
 const preprocess = (inputTokens: Array<Token>) => {
-  const tokens = [{type: "text", value: "Start", lineNum: 0}].concat(inputTokens);
-  tokens.push({ type: "text", value: "End", lineNum: tokens[tokens.length-1].lineNum });
+  const startToken: Token = {type: "start", value: "Start", lineNum: 0};
+  const tokens: Token[] = [startToken].concat(inputTokens);
+  const endToken: Token = { type: "end", value: "End", lineNum: tokens[tokens.length-1].lineNum}
+  tokens.push(endToken);
 
   let tokenIndex = 1;
   while (tokenIndex < tokens.length) {
@@ -147,7 +151,7 @@ const convertToTree = (text: string) => {
 
   tokens.forEach((token, tokenIndex) => {
     let expectedType;
-    if (token.type === "text") {
+    if (token.type === "text" || token.type === "start" || token.type === "end") {
       expectedType = "statement";
     } else {
       expectedType = token.value;
@@ -179,6 +183,14 @@ const convertToTree = (text: string) => {
         if (nextToken !== undefined && nextToken.type === "keyword" && nextToken.value === "if") {
           throw new Error(`"else if" not supported on line ${token.lineNum}.`);
         }
+      } else if (token.value === "while") {
+        expected = ["("];
+        state = "while";
+
+        const newCondition: Node = {
+          type: "loop"
+        };
+        statements.push(newCondition);
       }
     } else if (token.type === "grouping") {
       if (token.value === '(') {
@@ -186,7 +198,7 @@ const convertToTree = (text: string) => {
       } else if (token.value === ')') {
         expected = ["{"];
       } else if (token.value === '{') {
-        expected = ["statement", "if", "}"];
+        expected = ["statement", "if", "}", "while"];
 
 
         const lastStatement = statements[statements.length - 1];
@@ -200,6 +212,12 @@ const convertToTree = (text: string) => {
           lastStatement.else = [];
           parentStack.push(statements);
           statements = lastStatement.else;
+        } else if (state === "while") {
+          state = "loop";
+
+          lastStatement.loop = [];
+          parentStack.push(statements);
+          statements = lastStatement.loop;
         }
       } else if (token.value === "}") {
         expected = ["else", "statement", "}"];
@@ -207,15 +225,15 @@ const convertToTree = (text: string) => {
         statements = parentStack.pop();
       }
     } else {
-      if (state === "if") {
+      if (state === "if" || state === "while") {
         expected = [")"];
       } else {
-        expected = ["}", "statement", "if"];
+        expected = ["}", "statement", "if", "while"];
       }
 
       const id = `id${currId}`;
 
-      if (state === "if") {
+      if (state === "if" || state === "while") {
         const lastStatement = statements[statements.length - 1];
         lastStatement.id = id;
         lastStatement.text = token.value;
@@ -223,7 +241,8 @@ const convertToTree = (text: string) => {
         statements.push({
           type: "statement",
           id,
-          text: token.value
+          text: token.value,
+          isEnd: token.type === "end"
         });
       }
       
@@ -258,16 +277,27 @@ export const parse = (text:string) => {
       throw new Error("Error: no condition or statement.");
     }
 
+    const statement = block.statements[block.index];
+
     let parent = block;
     let next = parent.statements[parent.index + 1];
+
     while (next === undefined && parent) {
       parent = parent.parent;
+
       if (parent) {
-        next = parent.statements[parent.index+1];
+        const parentStatement = parent.statements[parent.index];
+        if (parentStatement && parentStatement.type === "loop") {
+          // loop back to parent statement
+          next = parentStatement;
+        } else {
+          // move to statement after higher parent
+          next = parent.statements[parent.index+1];
+        }
       }
     }
 
-    const statement = block.statements[block.index];
+    const sep = next && next.isEnd ? '--->' : '-->';
 
     if (block.index < block.statements.length - 1) {
       stack.push({
@@ -291,6 +321,8 @@ export const parse = (text:string) => {
 
           if (prev.type === "condition") {
             output.push(`${prev.id}-- Yes -->${next.id}`);
+          } else if (prev.type === "loop") {
+            throw new Error("Error: Empty loop.");
           }
         }
       }
@@ -298,11 +330,13 @@ export const parse = (text:string) => {
       output.push(`${statement.id}["${statement.text}"]`);
 
       if (next) {
-        output.push(`${statement.id}-->${next.id}`);
+        output.push(`${statement.id}${sep}${next.id}`);
       }
-    } else if (statement.type === "condition") {
+    } else if (statement.type === "condition" || statement.type === "loop") {
       output.push(`${statement.id}{"${statement.text}"}`);
+
       if (statement.else && statement.else.length > 0) {
+        // else block
         stack.push({
           statements: statement.else,
           index: 0,
@@ -310,16 +344,18 @@ export const parse = (text:string) => {
         });
         output.push(`${statement.id}-- No -->${statement.else[0].id}`);
       } else if (next) {
-        output.push(`${statement.id}-- No -->${next.id}`);
+        output.push(`${statement.id}-- No ${sep}${next.id}`);
       }
+
+      const innerBlock = statement.type === "condition" ? statement.then : statement.loop;
       stack.push({
-        statements: statement.then,
+        statements: innerBlock,
         index: 0,
         parent: block
       });
 
-      if (statement.then && statement.then[0]) {
-        output.push(`${statement.id}-- Yes -->${statement.then[0].id}`);
+      if (innerBlock && innerBlock[0]) {
+        output.push(`${statement.id}-- Yes -->${innerBlock[0].id}`);
       }
     }
   }

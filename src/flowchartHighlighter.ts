@@ -7,6 +7,8 @@ export const highlight = (text: string) => {
         return `<span class="code-if">${token}</span>`;
       } else if (token === "else") {
         return `<span class="code-else">${token}</span>`;
+      } else if (token === "while") {
+        return `<span class="code-while">${token}</span>`;
       } else if (token === "{" || token === "}") {
         return `<span class="code-block">${token}</span>`;
       } else if (token.startsWith("(")) {
