@@ -8,21 +8,27 @@ A chart (flowchart or dependency graph) editor
 
 [Flowchart Demo](https://d3lo92uftxhq1a.cloudfront.net/flowchart/)
 
-[Example](https://d3lo92uftxhq1a.cloudfront.net/flowchart/?diagram=U29tZSBTdGF0ZW1lbnQKQW5vdGhlciBTdGF0ZW1lbnQKaWYgKFNvbWUgQ29uZGl0aW9uKSB7CiAgICBpZiAoTmVzdGVkIENvbmRpdGlvbikgewogICAgICAgIERvIHRoaXMKICAgICAgICBUaGVuIHRoaXMKICAgIH0gZWxzZSB7CiAgICAgICAgRG8gdGhpcyBpbnN0ZWFkCiAgICB9Cn0gZWxzZSBpZiAoQW5vdGhlciBDb25kaXRpb24pIHsKICAgIEFub3RoZXIgdGhpbmcgdG8gZG8KfQpMYXN0IFRoaW5n):
+[Example](https://d3lo92uftxhq1a.cloudfront.net/flowchart/?diagram=U29tZSBTdGF0ZW1lbnQKQW5vdGhlciBTdGF0ZW1lbnQKaWYgKFNvbWUgQ29uZGl0aW9uPykgewogICAgaWYgKE5lc3RlZCBDb25kaXRpb24%2FKSB7CiAgICAgICAgRG8gdGhpcwogICAgICAgIFRoZW4gdGhpcwogICAgfSBlbHNlIHsKICAgICAgICBEbyB0aGlzIGluc3RlYWQKICAgIH0KfSBlbHNlIGlmIChBbm90aGVyIENvbmRpdGlvbj8pIHsKICAgIEFub3RoZXIgdGhpbmcgdG8gZG8KfQp3aGlsZSAoTW9yZSBUaGluZ3MgVG8gRG8%2FKSB7CiAgICBpZiAoVGlyZWQ%2FKSB7CiAgICAgICAgRWF0IFNvbWV0aGluZwogICAgfQogICAgRG8gVGhpbmdzCn0KT25lIExhc3QgVGhpbmc%3D):
 ```
 Some Statement
 Another Statement
-if (Some Condition) {
-    if (Nested Condition) {
+if (Some Condition?) {
+    if (Nested Condition?) {
         Do this
         Then this
     } else {
         Do this instead
     }
-} else if (Another Condition) {
+} else if (Another Condition?) {
     Another thing to do
 }
-Last Thing
+while (More Things To Do?) {
+    if (Tired?) {
+        Eat Something
+    }
+    Do Things
+}
+One Last Thing
 ```
 
 ## Dependency Graph
