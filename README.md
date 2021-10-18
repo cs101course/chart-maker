@@ -28,7 +28,7 @@ Last Thing
 ## Dependency Graph
 [Dependency Graph Demo](https://d3lo92uftxhq1a.cloudfront.net/tree_diagram/)
 
-Example:
+[Example](https://d3lo92uftxhq1a.cloudfront.net/tree_diagram/?diagram=Um9vdAogICAgTGV2ZWwgMSBDaGlsZCBBCiAgICAgICAgTGV2ZWwgMiBDaGlsZCBBLUEKICAgICAgICBMZXZlbCAyIENoaWxkIEEtQgogICAgICAgICAgICBTaGFyZWQgTm9kZQogICAgTGV2ZWwgMSBDaGlsZCBCCiAgICAgICAgTGV2ZWwgMiBDaGlsZCBCLUEKICAgICAgICBMZXZlbCAyIENoaWxkIEItQgogICAgU2hhcmVkIE5vZGU%3D):
 ```
 Root
     Level 1 Child A
