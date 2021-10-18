@@ -8,7 +8,7 @@ A chart (flowchart or dependency graph) editor
 
 [Flowchart Demo](https://d3lo92uftxhq1a.cloudfront.net/flowchart/)
 
-Example:
+[Example](https://d3lo92uftxhq1a.cloudfront.net/flowchart/?diagram=U29tZSBTdGF0ZW1lbnQKQW5vdGhlciBTdGF0ZW1lbnQKaWYgKFNvbWUgQ29uZGl0aW9uKSB7CiAgICBpZiAoTmVzdGVkIENvbmRpdGlvbikgewogICAgICAgIERvIHRoaXMKICAgICAgICBUaGVuIHRoaXMKICAgIH0gZWxzZSB7CiAgICAgICAgRG8gdGhpcyBpbnN0ZWFkCiAgICB9Cn0gZWxzZSBpZiAoQW5vdGhlciBDb25kaXRpb24pIHsKICAgIEFub3RoZXIgdGhpbmcgdG8gZG8KfQpMYXN0IFRoaW5n):
 ```
 Some Statement
 Another Statement
