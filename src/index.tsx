@@ -8,6 +8,7 @@ import {
   saveActivityState,
 } from "@openlearning/xapi";
 
+import { renderThumbnail } from "./thumbnail";
 import { App } from "./App";
 
 const lrsConfig = initLrs();
@@ -20,13 +21,15 @@ const b64UrlToAscii = (b64: string) => {
   return window.atob(decodeURIComponent(b64));
 };
 
+const urlParams = new URLSearchParams(window.location.search);
+
+const diagramMode = urlParams.get("mode");
+
 // the pathname determines the diagram mode.
 // Upload this app to a folder of this name:
 //   tree_diagram = Indent to make a hierarchy
 //   flowchart = Pseudocode Flowchart Maker
-const pathName = window.location.pathname.replace(/\/$/, "").replace(/^\//, "");
-
-const urlParams = new URLSearchParams(window.location.search);
+const pathName = diagramMode || window.location.pathname.replace(/\/$/, "").replace(/^\//, "");
 
 // query param ?diagram={b64 encoded json}
 // to render a pre-made diagram, read-only
@@ -37,7 +40,7 @@ const diagramInUrl = diagramB64 ? b64UrlToAscii(diagramB64) : "";
 const diagramAccessUrl = new URL(document.location.href);
 
 const render = (
-  onSave: (diagram: string) => Promise<void>,
+  onSave: (diagram: string, svg: string) => Promise<void>,
   initialDiagram: string
 ) => {
   ReactDOM.render(
@@ -46,31 +49,36 @@ const render = (
   );
 };
 
-const lrsSave = (diagram: string) => {
+const lrsSave = (diagram: string, svg: string) => {
   diagramAccessUrl.search = `?diagram=${asciiToB64Url(diagram)}`;
 
-  // Save and Share
-  return Promise.all([
-    saveActivityState(lrsConfig, "diagram", {
-      text: diagram
-    }),
-    saveAttachments(lrsConfig, [
-      {
-        contentType: "text/html",
-        fileUrl: diagramAccessUrl.toString(),
-        description: "A chart created by the learner",
-        display: "Chart",
-      },
-    ])
-  ]).then(() => {});
+  return renderThumbnail(svg).then((thumbnail: string) => {
+    // Save and Share
+    return Promise.all([
+      saveActivityState(lrsConfig, "diagram", {
+        text: diagram
+      }),
+      saveAttachments(lrsConfig, [
+        {
+          contentType: "text/html",
+          fileUrl: diagramAccessUrl.toString(),
+          description: "A chart created by the learner",
+          display: "Chart",
+        },
+      ], "published", thumbnail)
+    ]).then(() => {});
+  });
 };
 
-const errorSave = (diagram: string) => {
+const errorSave = (diagram: string, svg: string) => {
   // If there's no LRS configured, just throw an error with the diagram URL
   diagramAccessUrl.search = `?diagram=${asciiToB64Url(diagram)}`;
-  return Promise.reject({
-    error: "No LRS Configured",
-    diagramUrl: diagramAccessUrl.toString(),
+  return renderThumbnail(svg).then((thumbnail) => {
+    return Promise.reject({
+      error: "No LRS Configured",
+      diagramUrl: diagramAccessUrl.toString(),
+      thumbnail
+    });
   });
 };
 

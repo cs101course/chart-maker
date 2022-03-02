@@ -33,7 +33,7 @@ const DEFAULT_CONFIG = {
 
 MermaidAPI.initialize(DEFAULT_CONFIG);
 interface AppProps {
-  onSave: (diagram: string) => Promise<void>;
+  onSave: (diagram: string, svg: string) => Promise<void>;
   initialDiagram: string;
   chartType?: string;
 }
@@ -52,10 +52,11 @@ export const App = ({ onSave, initialDiagram, chartType }: AppProps) => {
     if (onSave) {
       setIsSaving(true);
 
-      onSave(text).then(() => {
+      onSave(text, diagram).then(() => {
         setIsSaving(false);
       }).catch((error) => {
         console.log(error);
+        setIsSaving(false);
       });
     }
   };

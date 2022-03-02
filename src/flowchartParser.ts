@@ -194,9 +194,17 @@ const convertToTree = (text: string) => {
       }
     } else if (token.type === "grouping") {
       if (token.value === '(') {
-        expected = ["statement"];
+        if (state === "if" || state === "while") {
+          expected = ["statement"];
+        } else {
+          expected = ["statement", ")"]
+        }
       } else if (token.value === ')') {
-        expected = ["{"];
+        if (state === "if" || state === "while") {
+          expected = ["{"];
+        } else {
+          expected = ["statement"];
+        }
       } else if (token.value === '{') {
         expected = ["statement", "if", "}", "while"];
 
@@ -220,7 +228,7 @@ const convertToTree = (text: string) => {
           statements = lastStatement.loop;
         }
       } else if (token.value === "}") {
-        expected = ["else", "statement", "}"];
+        expected = ["else", "statement", "}", "while"];
 
         statements = parentStack.pop();
       }
@@ -228,7 +236,7 @@ const convertToTree = (text: string) => {
       if (state === "if" || state === "while") {
         expected = [")"];
       } else {
-        expected = ["}", "statement", "if", "while"];
+        expected = ["}", "statement", "if", "while", "("];
       }
 
       const id = `id${currId}`;

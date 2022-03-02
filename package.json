@@ -12,7 +12,7 @@
   "license": "MIT",
   "homepage": "https://github.com/cs101course/tools#readme",
   "dependencies": {
-    "@openlearning/xapi": "^0.1.6",
+    "@openlearning/xapi": "^0.1.7",
     "mermaid": "^8.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
